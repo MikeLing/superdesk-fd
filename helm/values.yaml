@@ -1,9 +1,21 @@
+# Superdesk configuration for Funkedigital
+
 replicaCount: 1
 proto: https
 stage: stage
 appEnv: prod
 appDebug: 0
 timezone: Europe/Berlin
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: instance/type
+              operator: NotIn
+              values:
+                - lb
 
 elasticsearchPublisher:
   name: elasticsearch
@@ -19,20 +31,24 @@ elasticsearchSuperdesk:
   tag: 2.4-alpine
   serviceName: elastic
 
-memcached:
-  name: memcached-deployment
-  component: memcached
-  image: memcached
-  tag: latest
-  serviceName: memcached
-
+# mongodb configuration
 mongodb:
-  name: mongodb-deployment
-  component: mongodb
-  image: mongo
-  tag: 3.4
+  name: mongodb
+
+  # service port for mongodb
+  port: 27017
+
+  # repo for mongodb
+  image:
+    repository: mongo
+    tag: 3.4
   serviceName: mongodb
-  pvcSize: 100Gi
+
+  # pvc for mongodb
+  persistentVolume:
+    enabled: true
+    storageClass: 
+    size: 100Gi
 
 nginx:
   name: nginx-deployment
@@ -41,13 +57,19 @@ nginx:
   tag: latest
   serviceName: publisher
 
-postgres:
-  name: postgres
-  component: postgres
-  image: postgres
-  tag: latest
-  serviceName: postgres
-  pvcSize: 50Gi
+# Postgresql confgiuration
+postgresql:
+
+  # postgres password and database
+  # change it if you are using different db and password in superdesk
+  # postgresqlUsername: "postgres"
+  postgresqlPassword: "postgres"
+  postgresqlDatabase: "publications"
+
+  # pvc for postgresql storage
+  persistence:
+    enabled: true
+    size: 50Gi
 
 publisher:
   name: php
@@ -58,19 +80,85 @@ publisher:
   superdeskHost: "superdesk-stage.cloud.funkedigital.de"
   pvcSize: 1Ti
 
+# configuration for rabbitmq
 rabbitmq:
-  name: rabbitmq-deployment
-  component: rabbitmq
-  image: rabbitmq
-  tag: management
-  serviceName: rabbitmq
+  replicas: 3
 
+  # enable it if you want rbac for rabbitmq management
+  rbacEnabled: false
+  name: rabbitmq
+
+  # change it if other service type is prefer
+  service:
+    type: ClusterIP
+    nodePort: 5672
+    managerPort: 15672
+
+  # env for timezone
+  env:
+    - name: TZ
+      value: Europe/Berlin
+
+  # affinity for rabbitmq
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: instance/type
+                operator: NotIn
+                values:
+                  - lb
+
+# configuration for redis
 redis:
-  name: redis-deployment
-  component: redis
-  image: redis:alpine
-  tag: 5.0
-  serviceName: redis
+  name: redis
+  redisPort: 6379
+
+  # image for redis  
+  # image:
+    # repository: bitnami/redis
+    # tag: 5.0
+  master:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: instance/type
+                  operator: NotIn
+                  values:
+                    - lb
+  slave:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: instance/type
+                  operator: NotIn
+                  values:
+                    - lb
+
+# confiration fxor memcached
+memcached:
+  # replica size for memcached
+  replicas: 3
+
+  # service port for memached
+  service:
+    port: 11211
+
+  # affinity for memcached
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: instance/type
+                operator: NotIn
+                values:
+                  - lb
 
 superdesk:
   name: superdesk-deployment

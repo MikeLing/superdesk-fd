@@ -12,15 +12,10 @@ spec:
       labels:
         component: {{ .Values.publisher.component }}
     spec:
+    {{- if .Values.affinity }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: instance/type
-                    operator: NotIn
-                    values:
-                      - lb
+{{- toYaml .Values.affinity | nindent 8 }}
+    {{- end }}
       volumes:
         - name: publisher-storage
           persistentVolumeClaim:
