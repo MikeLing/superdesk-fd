@@ -20,6 +20,8 @@ spec:
         - name: publisher-storage
           persistentVolumeClaim:
             claimName: publisher-persistent-volume-claim
+      imagePullSecrets:
+      - name: harbor-access
       containers:
         - name: nginxpub
           image: "{{ .Values.nginx.image }}:{{ .Values.nginx.tag }}"
@@ -36,5 +38,3 @@ spec:
             postStart:
               exec:
                 command: ["/bin/sh", "-c", "sleep 5 && rm -f /etc/localtime && ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime"]
-      imagePullSecrets:
-        - name: harbor-access

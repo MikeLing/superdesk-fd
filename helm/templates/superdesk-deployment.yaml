@@ -20,6 +20,8 @@ spec:
         - name: superdesk-storage
           persistentVolumeClaim:
             claimName: superdesk-persistent-volume-claim
+      imagePullSecrets:
+      - name: harbor-access
       containers:
         - name: client
           image: "{{ .Values.superdesk.image }}:{{ .Values.superdesk.tag }}"
@@ -98,5 +100,3 @@ spec:
             periodSeconds: 5
             successThreshold: 2
             timeoutSeconds: 2
-      imagePullSecrets:
-        - name: harbor-access

@@ -20,6 +20,8 @@ spec:
         - name: publisher-storage
           persistentVolumeClaim:
             claimName: publisher-persistent-volume-claim
+      imagePullSecrets:
+      - name: harbor-access
       containers:
         - name: php
           image: "{{ .Values.publisher.image }}:{{ .Values.publisher.tag }}"
@@ -103,6 +105,3 @@ spec:
               value: {{ .Values.timezone | quote }}
             - name: FIXTURES_TYPE
               value: {{ .Values.appEnv }}
-      imagePullSecrets:
-        - name: harbor-access
-

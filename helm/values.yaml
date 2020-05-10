@@ -45,9 +45,11 @@ mongodb:
   serviceName: mongodb
 
   # pvc for mongodb
-  persistentVolume:
+  persistence:
     enabled: true
-    storageClass: 
+    mountPath: /data/db
+    accessModes:
+      - ReadWriteMany
     size: 100Gi
 
 nginx:
@@ -77,15 +79,17 @@ publisher:
   image: harbor.cloud.funkedigital.de/superdesk/stage/php
   tag: latest
   serviceName: php
-  superdeskHost: "superdesk-stage.cloud.funkedigital.de"
+  superdeskHost: "superdesk-test.cloud.funkedigital.de"
   pvcSize: 1Ti
 
 # configuration for rabbitmq
 rabbitmq:
   replicas: 3
 
+  securityContext:
+    enabled: false
+
   # enable it if you want rbac for rabbitmq management
-  rbacEnabled: false
   name: rabbitmq
 
   # change it if other service type is prefer
@@ -98,17 +102,6 @@ rabbitmq:
   env:
     - name: TZ
       value: Europe/Berlin
-
-  # affinity for rabbitmq
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: instance/type
-                operator: NotIn
-                values:
-                  - lb
 
 # configuration for redis
 redis:
@@ -166,8 +159,8 @@ superdesk:
   image: harbor.cloud.funkedigital.de/superdesk/stage/superdesk
   tag: latest
   serviceName: superdesk-service-ip
-  baseUrl: "superdesk-stage.cloud.funkedigital.de"
-  swpHost: "publisher-stage.cloud.funkedigital.de"
+  baseUrl: "superdesk-test.cloud.funkedigital.de"
+  swpHost: "publisher-test.cloud.funkedigital.de"
   pvcSize: 1Ti
 
 supervisor:
@@ -197,7 +190,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-body-size: "1024m"
     nginx.org/client-max-body-size: "1024m"
   hosts:
-    - host: superdesk-stage.cloud.funkedigital.de
+    - host: superdesk-test.cloud.funkedigital.de
       paths:
         - path: /
           backend:
@@ -215,7 +208,7 @@ ingress:
           backend:
             serviceName: superdesk-service-ip
             servicePort: 5100
-    - host: publisher-stage.cloud.funkedigital.de
+    - host: publisher-test.cloud.funkedigital.de
       paths:
         - path: /
           backend:
@@ -225,7 +218,7 @@ ingress:
           backend:
             serviceName: supervisor
             servicePort: 8080
-    - host: waz.cloud.funkedigital.de
+    - host: waz-test.cloud.funkedigital.de
       paths:
         - path: /
           backend:
@@ -235,7 +228,7 @@ ingress:
           backend:
             serviceName: supervisor
             servicePort: 8080
-    - host: stage.wmn.de
+    - host: test.wmn.de
       paths:
         - path: /
           backend:
@@ -247,15 +240,15 @@ ingress:
             servicePort: 8080
   tls:
     - hosts:
-        - stage.wmn.de
-      secretName: stage.wmn.de.tls
+        - test.wmn.de
+      secretName: test.wmn.de.tls
     - hosts:
-        - superdesk-stage.cloud.funkedigital.de
-      secretName: superdesk-stage.tls
+        - superdesk-test.cloud.funkedigital.de
+      secretName: superdesk-test.tls
     - hosts:
-        - publisher-stage.cloud.funkedigital.de
-      secretName: publisher-stage.tls
+        - publisher-test.cloud.funkedigital.de
+      secretName: publisher-test.tls
     - hosts:
-        - waz.cloud.funkedigital.de
-      secretName: waz.cloud.funkedigital.de.tls
+        - waz-test.cloud.funkedigital.de
+      secretName: waz-test.cloud.funkedigital.de.tls
 

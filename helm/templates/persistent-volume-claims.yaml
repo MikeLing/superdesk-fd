@@ -14,19 +14,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mongodb-persistent-volume-claim
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: {{ .Values.mongodb.persistentVolume.size }}
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
   name: publisher-persistent-volume-claim
 spec:
   accessModes:
