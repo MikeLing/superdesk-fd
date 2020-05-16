@@ -19,6 +19,13 @@ spec:
       containers:
         - name: {{ .Values.elasticsearchSuperdesk.component }}
           image: "{{ .Values.elasticsearchSuperdesk.image }}:{{ .Values.elasticsearchSuperdesk.tag }}"
+          resources:
+            limits:
+              cpu: "8"
+              memory: 16Gi
+            requests:
+              cpu: "4"
+              memory: 8Gi
           ports:
             - containerPort: 9200
           env:

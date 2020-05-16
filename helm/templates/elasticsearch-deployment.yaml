@@ -19,6 +19,13 @@ spec:
       containers:
         - name: {{ .Values.elasticsearchPublisher.name }}
           image: "{{ .Values.elasticsearchPublisher.image }}:{{ .Values.elasticsearchPublisher.tag }}"
+          resources:
+            limits:
+              cpu: "8"
+              memory: 16Gi
+            requests:
+              cpu: "4"
+              memory: 8Gi
           ports:
             - containerPort: 9200
             - containerPort: 9300

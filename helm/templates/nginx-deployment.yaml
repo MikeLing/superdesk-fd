@@ -25,6 +25,13 @@ spec:
       containers:
         - name: nginxpub
           image: "{{ .Values.nginx.image }}:{{ .Values.nginx.tag }}"
+          resources:
+            limits:
+              cpu: "8"
+              memory: 16Gi
+            requests:
+              cpu: "4"
+              memory: 8Gi
           ports:
             - containerPort: 80
             - containerPort: 8080

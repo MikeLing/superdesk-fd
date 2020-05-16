@@ -28,11 +28,16 @@ spec:
           resources:
             limits:
               cpu: "8"
-              memory: 128Gi
+              memory: 16Gi
             requests:
+<<<<<<< HEAD
               cpu: "8"
               memory: 128Gi
          {{- if .Values.superdesk.ports }}
+=======
+              cpu: "4"
+              memory: 8Gi
+>>>>>>> f7f29efc612331d6da8761441c7084beafe9157b
           ports:
 {{- toYaml .Values.superdesk.ports | nindent 12}}
         {{- end }}
@@ -50,6 +55,7 @@ spec:
             - name: TZ
               value: {{ .Values.timezone | quote }}
             - name: SUPERDESK_CLIENT_CONFIG_FILE
+<<<<<<< HEAD
               value: "superdesk-{{ .Values.stage }}.cloud.config.js"          
         {{- if .Values.superdesk.env }}
           {{- toYaml .Values.superdesk.env | nindent 12 }}
@@ -74,3 +80,8 @@ spec:
             periodSeconds: 5
             successThreshold: 2
             timeoutSeconds: 2
+=======
+              value: "superdesk-{{ .Values.stage }}.cloud.config.js"
+      imagePullSecrets:
+        - name: harbor-access
+>>>>>>> f7f29efc612331d6da8761441c7084beafe9157b

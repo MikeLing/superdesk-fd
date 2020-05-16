@@ -21,6 +21,13 @@ spec:
       containers:
         - name: supervisor
           image: "{{ .Values.supervisor.image }}:{{ .Values.supervisor.tag }}"
+          resources:
+            limits:
+              cpu: "8"
+              memory: 16Gi
+            requests:
+              cpu: "4"
+              memory: 8Gi
           ports:
         {{- if .Values.supervisor.ports }}
 {{- toYaml .Values.supervisor.ports | nindent 12}}
