@@ -34,7 +34,7 @@ elasticsearchSuperdesk:
 # mongodb configuration
 mongodb:
   name: mongodb
-
+  fullnameOverride: "mongodb"
   # service port for mongodb
   port: 27017
 
@@ -61,7 +61,7 @@ nginx:
 
 # Postgresql confgiuration
 postgresql:
-
+  fullnameOverride: "postgres"
   # postgres password and database
   # change it if you are using different db and password in superdesk
   # postgresqlUsername: "postgres"
@@ -169,6 +169,7 @@ rabbitmq:
 
 # configuration for redis
 redis:
+  fullnameOverride: "redis"
   redisPort: 6379
 
   # image for redis  
@@ -198,6 +199,8 @@ redis:
 
 # confiration fxor memcached
 memcached:
+  fullnameOverride: "memcached"
+
   # replica size for memcached
   replicas: 3
 
@@ -267,7 +270,7 @@ superdesk:
       value: "redis://redis:6379/1"
 
   service:
-    port:
+    ports:
       - name: fe
         port: 9000
         targetPort: 9000

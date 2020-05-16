@@ -34,6 +34,8 @@ if init_data.exists():
 INSTALLED_APPS.extend([
     #'analytics',
     'apps.languages',
+    'fd.io.feed_parsers',
+    'fd.io.feeding_services'
 ])
 
 RENDITIONS = {
