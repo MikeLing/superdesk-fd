@@ -35,73 +35,22 @@ spec:
           ports:
             - containerPort: 9000
           volumeMounts:
-            - mountPath: /var/www/publisher/public/bundles/_themes
-              name: publisher-storage
-            - mountPath: /var/www/publisher/public/uploads
-              name: publisher-storage
-            - mountPath: /var/www/publisher/templates
-              name: publisher-storage
-            - mountPath: /var/www/publisher/app/themes
-              name: publisher-storage
-            - mountPath: /var/www/publisher/app/meta
-              name: publisher-storage
-            - mountPath: /var/www/publisher/var/cache/dev
-              name: publisher-storage
-            - mountPath: /var/www/publisher/var/log
-              name: publisher-storage
+        {{- if .Values.publisher.volumeMounts }}
+{{- toYaml .Values.publisher.volumeMounts | nindent 12}}
+        {{- end }}
           env:
-            - name: DATABASE_URL
-              value: "pgsql://postgres:postgres@postgres/publications"
             - name: APP_ENV
               value: {{ .Values.appEnv | quote }}
             - name: APP_DEBUG
               value: {{ .Values.appDebug | quote }}
-            - name: ELASTICA_HOST
-              value: "elasticsearch"
-            - name: ELASTICA_PORT
-              value: "9200"
-            - name: APP_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: publisher-app-secret
-                  key: APP_SECRET
-            - name: DOCTRINE_CACHE_DRIVER
-              value: "memcached"
-            - name: SWP_DOMAIN
-              value: "publisher"
-            - name: SENTRY_DSN
-              value: "false"
-            - name: MAILER_URL
-              value: "smtp://localhost"
             - name: CORS_ALLOW_ORIGIN
               value: "{{ .Values.proto }}://{{ .Values.publisher.superdeskHost }}"
-            - name: ELASTICA_INDEX_NAME
-              value: "swp_index-docker"
-            - name: FS_MAIN_ADAPTER
-              value: "local_adapter"
-            - name: SESSION_MEMCACHED_HOST
-              value: "memcached"
             - name: SUPERDESK_SERVERS
               value: "[\"{{ .Values.proto }}://{{ .Values.publisher.superdeskHost }}\"]"
-            - name: SESSION_MEMCACHED_PORT
-              value: "11211"
-            - name: SESSION_MEMCACHED_PREFIX
-              value: "sess"
-            - name: SESSION_MEMCACHED_EXPIRE
-              value: "3600"
-            - name: RABBIT_MQ_HOST
-              value: "rabbitmq"
-            - name: RABBIT_MQ_PORT
-              value: "5672"
-            - name: RABBIT_MQ_USER
-              value: "guest"
-            - name: RABBIT_MQ_PASSWORD
-              value: "guest"
-            - name: WEBSOCKET_PORT
-              value: "443"
-            - name: WEBSOCKET_HOST
-              value: "127.0.0.1"
             - name: TZ
               value: {{ .Values.timezone | quote }}
             - name: FIXTURES_TYPE
-              value: {{ .Values.appEnv }}
+              value: {{ .Values.appEnv }} 
+        {{- if .Values.publisher.env }}
+          {{- toYaml .Values.publisher.env | nindent 12 }}
+        {{end}}

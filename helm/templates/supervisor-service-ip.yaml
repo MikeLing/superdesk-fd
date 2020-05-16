@@ -6,10 +6,7 @@ spec:
   type: {{ .Values.service.type }}
   selector:
     component: {{ .Values.supervisor.component }}
+  {{- if .Values.supervisor.service.ports }}
   ports:
-    - name: sup
-      port: 5555
-      targetPort: 5555
-    - name: yup
-      port: 8080
-      targetPort: 8080
+{{- toYaml .Values.supervisor.service.ports | nindent 4}}
+  {{- end }}

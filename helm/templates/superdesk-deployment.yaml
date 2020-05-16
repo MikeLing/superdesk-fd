@@ -14,7 +14,7 @@ spec:
     spec:
     {{- if .Values.affinity }}
       affinity:
-{{- toYaml .Values.affinity | nindent 8 }}
+    {{- toYaml .Values.affinity | nindent 8 }}
     {{- end }}
       volumes:
         - name: superdesk-storage
@@ -32,20 +32,13 @@ spec:
             requests:
               cpu: "8"
               memory: 128Gi
+         {{- if .Values.superdesk.ports }}
           ports:
-            - containerPort: 9000
-            - containerPort: 5000
-            - containerPort: 5100
-            - containerPort: 5400
-            - containerPort: 443
-            - containerPort: 80
+{{- toYaml .Values.superdesk.ports | nindent 12}}
+        {{- end }}
           env:
             - name: HOST
               value: "{{ .Values.superdesk.baseUrl }}"
-            - name: DB_HOST
-              value: "mongodb"
-            - name: DB_NAME
-              value: "superdesk"
             - name: SUPERDESK_URL
               value: "{{ .Values.proto }}://{{ .Values.superdesk.baseUrl }}/api"
             - name: CONTENTAPI_URL
@@ -54,32 +47,13 @@ spec:
               value: "wss://{{ .Values.superdesk.baseUrl }}/ws"
             - name: SUPERDESK_CLIENT_URL
               value: "{{ .Values.proto}}://{{ .Values.superdesk.baseUrl }}"
-            - name: DOCKER_IP
-              value: "superdesk"
-            - name: MONGO_URI
-              value: "mongodb://mongodb/superdesk"
-            - name: LEGAL_ARCHIVE_URI
-              value: "mongodb://mongodb/superdesk_la"
-            - name: ARCHIVED_URI
-              value: "mongodb://mongodb/superdesk_ar"
-            - name: ELASTICSEARCH_URL
-              value: "http://elastic:9200"
-            - name: ELASTICSEARCH_INDEX
-              value: "superdesk"
-            - name: CONTENTAPI_ELASTICSEARCH_INDEX
-              value: "superdesk_ca"
-            - name: CONTENTAPI_ELASTIC_INDEX
-              value: "superdesk_ca"
-            - name: CONTENTAPI_MONGO_URI
-              value: "mongodb://mongodb/superdesk_ca"
-            - name: REDIS_URL
-              value: "redis://redis:6379/1"
             - name: TZ
               value: {{ .Values.timezone | quote }}
             - name: SUPERDESK_CLIENT_CONFIG_FILE
-              value: "superdesk-{{ .Values.stage }}.cloud.config.js"
-          # probe after +5min (building client takes time) and check against :5000/api
-          # TODO use values.yaml
+              value: "superdesk-{{ .Values.stage }}.cloud.config.js"          
+        {{- if .Values.superdesk.env }}
+          {{- toYaml .Values.superdesk.env | nindent 12 }}
+        {{- end}}
           livenessProbe:
             failureThreshold: 10
             httpGet:

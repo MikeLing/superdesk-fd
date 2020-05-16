@@ -6,22 +6,7 @@ spec:
   type: {{ .Values.service.type }}
   selector:
     component: {{ .Values.superdesk.component }}
+  {{- if .Values.superdesk.service.ports }}
   ports:
-    - name: fe
-      port: 9000
-      targetPort: 9000
-    - name: be
-      port: 5000
-      targetPort: 5000
-    - name: content-api
-      port: 5400
-      targetPort: 5400
-    - name: ws-ser
-      port: 5100
-      targetPort: 5100
-    - name: ws-sersd
-      port: 443
-      targetPort: 443
-    - name: ws-sers
-      port: 80
-      targetPort: 80
+{{- toYaml .Values.superdesk.service.ports | nindent 4}}
+  {{- end }}

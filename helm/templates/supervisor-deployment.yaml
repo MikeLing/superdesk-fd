@@ -16,25 +16,19 @@ spec:
       affinity:
 {{- toYaml .Values.affinity | nindent 8 }}
     {{- end }}
-      volumes:
-        - name: publisher-storage
-          persistentVolumeClaim:
-            claimName: publisher-persistent-volume-claim
       imagePullSecrets:
       - name: harbor-access
       containers:
         - name: supervisor
           image: "{{ .Values.supervisor.image }}:{{ .Values.supervisor.tag }}"
           ports:
-            - containerPort: 8080
-              protocol: TCP
-            - containerPort: 5555
-              protocol: TCP
+        {{- if .Values.supervisor.ports }}
+{{- toYaml .Values.supervisor.ports | nindent 12}}
+        {{- end }}
           volumeMounts:
-            - mountPath: /var/www/publisher/app/logs
-              name: publisher-storage
-            - mountPath: /var/www/publisher/public/uploads
-              name: publisher-storage
+        {{- if .Values.supervisor.volumeMounts }}
+{{- toYaml .Values.supervisor.volumeMounts | nindent 12}}
+        {{- end }}
           env:
             - name: APP_DEBUG
               value: {{ .Values.appDebug | quote }}
@@ -46,31 +40,10 @@ spec:
             # php bin/console swp:organization:update OrganizationName --secretToken secret_token
             - name: CORS_ALLOW_ORIGIN
               value: '["{{ .Values.proto }}://{{ .Values.superdesk.swpHost }}", "{{ .Values.proto }}://{{ .Values.publisher.superdeskHost }}"]'
-            - name: DATABASE_URL
-              value: pgsql://postgres:postgres@postgres/publications
-            - name: ELASTICA_HOST
-              value: elasticsearch
-            - name: ELASTICA_INDEX_NAME
-              value: swp_index
-            - name: ELASTICA_PORT
-              value: "9200"
-            - name: FS_MAIN_ADAPTER
-              value: local_adapter
-            - name: MESSENGER_TRANSPORT_DSN
-              value: amqp://guest:guest@rabbitmq:5672/%2f/messages
-            - name: RABBIT_MQ_HOST
-              value: rabbitmq
-            - name: RABBIT_MQ_PASSWORD
-              value: guest
-            - name: RABBIT_MQ_PORT
-              value: "5672"
-            - name: RABBIT_MQ_USER
-              value: guest
-            - name: RABBIT_MQ_VHOST
-              value: /
-            - name: TZ
-              value: {{ .Values.timezone }}
-            - name: WEBSOCKET_HOST
-              value: 0.0.0.0
-            - name: WEBSOCKET_PORT
-              value: "8080"
+        {{- if .Values.supervisor.env }}
+          {{- toYaml .Values.supervisor.env | nindent 12 }}
+        {{- end}}
+      volumes:
+        - name: publisher-storage
+          persistentVolumeClaim:
+            claimName: publisher-persistent-volume-claim
