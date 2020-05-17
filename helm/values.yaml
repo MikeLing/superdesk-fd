@@ -148,6 +148,7 @@ publisher:
 
 # configuration for rabbitmq
 rabbitmq:
+  fullnameOverride: "rabbitmq"
   replicas: 1
 
   securityContext:
